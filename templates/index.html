@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 Multi-Language Translator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Bengali:wght@400;600&family=Inter:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .language-selector {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: end;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .lang-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .lang-group label {
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        select {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            color: #2d3748;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .swap-btn {
+            background: linear-gradient(135deg, #ff7b7b 0%, #ff9a9a 100%);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 123, 123, 0.3);
+        }
+        
+        .swap-btn:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 123, 123, 0.4);
+        }
+        
+        .text-areas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .text-group label {
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 1.1rem;
+        }
+        
+        textarea {
+            min-height: 200px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Bengali', sans-serif;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .output-area {
+            background: #f7fafc;
+            border-left: 4px solid #4facfe;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .status-bar {
+            background: #2d3748;
+            color: white;
+            padding: 15px 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff30;
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .success {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .language-selector {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .text-areas {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        .kannada-test {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Noto Sans Kannada', sans-serif;
+            line-height: 1.8;
+            display: none;
+        }
+        
+        .font-selector {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .font-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .font-option {
+            padding: 10px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .font-option:hover {
+            border-color: #4facfe;
+            background: #f0f9ff;
+        }
+        
+        .font-option.active {
+            border-color: #4facfe;
+            background: #dbeafe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Multi-Language Translator</h1>
+            <p>Translate text between multiple Indian languages with beautiful typography</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="language-selector">
+                <div class="lang-group">
+                    <label for="source-lang">From</label>
+                    <select id="source-lang">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Kannada">Kannada</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Telugu">Telugu</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Marathi">Marathi</option>
+                        <option value="Gujarati">Gujarati</option>
+                        <option value="Malayalam">Malayalam</option>
+                        <option value="Punjabi">Punjabi</option>
+                        <option value="Urdu">Urdu</option>
+                    </select>
+                </div>
+                
+                <button class="swap-btn" onclick="swapLanguages()" title="Swap languages">⇄</button>
+                
+                <div class="lang-group">
+                    <label for="target-lang">To</label>
+                    <select id="target-lang">
+                        <option value="Hindi">Hindi</option>
+                        <option value="English">English</option>
+                        <option value="Kannada">Kannada</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Telugu">Telugu</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Marathi">Marathi</option>
+                        <option value="Gujarati">Gujarati</option>
+                        <option value="Malayalam">Malayalam</option>
+                        <option value="Punjabi">Punjabi</option>
+                        <option value="Urdu">Urdu</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="text-areas">
+                <div class="text-group">
+                    <label for="input-text">Input Text</label>
+                    <textarea id="input-text" placeholder="Enter text to translate..."></textarea>
+                </div>
+                
+                <div class="text-group">
+                    <label for="output-text">Translation Result</label>
+                    <textarea id="output-text" class="output-area" readonly placeholder="Translation will appear here..."></textarea>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-primary" onclick="translateText()">
+                    <span id="translate-text">Translate Text</span>
+                </button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+                <button class="btn btn-success" onclick="copyResult()">Copy Result</button>
+                <button class="btn btn-secondary" onclick="testKannadaFont()">Test Kannada</button>
+            </div>
+            
+            <div class="error" id="error-message"></div>
+            <div class="success" id="success-message"></div>
+            
+            <div class="kannada-test" id="kannada-test">
+                <h3>📝 Kannada Font Test:</h3>
+                <div id="kannada-sample"></div>
+            </div>
+            
+            <div class="font-selector">
+                <h3>🔤 Font Selection for Indic Scripts</h3>
+                <p>Choose the best font for displaying Kannada and other Indic languages:</p>
+                <div class="font-options">
+                    <div class="font-option active" onclick="changeFont('Noto Sans Kannada')">
+                        <strong>Noto Sans Kannada</strong><br>
+                        <small>ಕನ್ನಡ ಮಾತೃಭಾಷೆ</small>
+                    </div>
+                    <div class="font-option" onclick="changeFont('Noto Sans Devanagari')">
+                        <strong>Noto Sans Devanagari</strong><br>
+                        <small>हिन्दी भाषा</small>
+                    </div>
+                    <div class="font-option" onclick="changeFont('Noto Sans Tamil')">
+                        <strong>Noto Sans Tamil</strong><br>
+                        <small>தமிழ் மொழி</small>
+                    </div>
+                    <div class="font-option" onclick="changeFont('Noto Sans Telugu')">
+                        <strong>Noto Sans Telugu</strong><br>
+                        <small>తెలుగు భాష</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-icon" id="status-icon">✨</div>
+            <span id="status-text">Ready to translate</span>
+        </div>
+    </div>
+
+    <script>
+        let currentFont = 'Noto Sans Kannada';
+        
+        function updateStatus(message, isLoading = false, isError = false) {
+            const statusText = document.getElementById('status-text');
+            const statusIcon = document.getElementById('status-icon');
+            
+            statusText.textContent = message;
+            
+            if (isLoading) {
+                statusIcon.innerHTML = '<div class="loading"></div>';
+            } else if (isError) {
+                statusIcon.textContent = '❌';
+            } else {
+                statusIcon.textContent = '✨';
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        function swapLanguages() {
+            const sourceLang = document.getElementById('source-lang');
+            const targetLang = document.getElementById('target-lang');
+            
+            const temp = sourceLang.value;
+            sourceLang.value = targetLang.value;
+            targetLang.value = temp;
+            
+            updateStatus('Languages swapped');
+        }
+        
+        function clearAll() {
+            document.getElementById('input-text').value = '';
+            document.getElementById('output-text').value = '';
+            document.getElementById('kannada-test').style.display = 'none';
+            updateStatus('Text cleared');
+        }
+        
+        async function translateText() {
+            const inputText = document.getElementById('input-text').value.trim();
+            const sourceLang = document.getElementById('source-lang').value;
+            const targetLang = document.getElementById('target-lang').value;
+            const translateBtn = document.querySelector('.btn-primary');
+            const translateTextSpan = document.getElementById('translate-text');
+            
+            if (!inputText) {
+                showError('Please enter some text to translate!');
+                return;
+            }
+            
+            if (sourceLang === targetLang) {
+                showError('Source and target languages cannot be the same!');
+                return;
+            }
+            
+            // Disable button and show loading
+            translateBtn.disabled = true;
+            translateTextSpan.textContent = 'Translating...';
+            updateStatus('Translating...', true);
+            
+            try {
+                const response = await fetch('/translate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: inputText,
+                        source_lang: sourceLang,
+                        target_lang: targetLang
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('output-text').value = data.translated_text;
+                    updateStatus(`Translation completed: ${sourceLang} → ${targetLang}`);
+                    showSuccess('Translation successful!');
+                } else {
+                    showError(data.error);
+                    updateStatus('Translation failed', false, true);
+                }
+                
+            } catch (error) {
+                showError('Network error. Please check your connection.');
+                updateStatus('Translation failed', false, true);
+            } finally {
+                // Re-enable button
+                translateBtn.disabled = false;
+                translateTextSpan.textContent = 'Translate Text';
+            }
+        }
+        
+        async function copyResult() {
+            const outputText = document.getElementById('output-text').value;
+            
+            if (!outputText.trim()) {
+                showError('No translation result to copy!');
+                return;
+            }
+            
+            try {
+                await navigator.clipboard.writeText(outputText);
+                showSuccess('Result copied to clipboard!');
+                updateStatus('Result copied to clipboard');
+            } catch (error) {
+                showError('Failed to copy to clipboard');
+            }
+        }
+        
+        async function testKannadaFont() {
+            try {
+                const response = await fetch('/test_kannada');
+                const data = await response.json();
+                
+                const testDiv = document.getElementById('kannada-test');
+                const sampleDiv = document.getElementById('kannada-sample');
+                
+                sampleDiv.innerHTML = `<p><strong>Current font:</strong> ${currentFont}</p><p>${data.sample_text}</p>`;
+                testDiv.style.display = 'block';
+                
+                updateStatus(`Kannada test displayed with font: ${currentFont}`);
+            } catch (error) {
+                showError('Failed to load Kannada test');
+            }
+        }
+        
+        function changeFont(fontName) {
+            currentFont = fontName;
+            
+            // Update font for text areas
+            document.getElementById('input-text').style.fontFamily = `'${fontName}', sans-serif`;
+            document.getElementById('output-text').style.fontFamily = `'${fontName}', sans-serif`;
+            document.getElementById('kannada-sample').style.fontFamily = `'${fontName}', sans-serif`;
+            
+            // Update active font option
+            document.querySelectorAll('.font-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.closest('.font-option').classList.add('active');
+            
+            updateStatus(`Font changed to: ${fontName}`);
+            
+            // Auto-test if Kannada test is visible
+            if (document.getElementById('kannada-test').style.display !== 'none') {
+                setTimeout(testKannadaFont, 500);
+            }
+        }
+        
+        // Allow Ctrl+Enter to translate
+        document.getElementById('input-text').addEventListener('keydown', function(event) {
+            if (event.ctrlKey && event.key === 'Enter') {
+                translateText();
+            }
+        });
+        
+        // Initialize
+        updateStatus('Ready to translate');
+    </script>
+</body>
+</html>
